@@ -1,4 +1,4 @@
-##### This project won't get update until an unspecified time.
+##### Forked from Wahayu's repo: Editing and adding whatever features I like
 <hr>
 
 # Iolive
