@@ -11,7 +11,8 @@
 [Iolive](https://github.com/wahyuandhika/Iolive) is an application for displaying Live2D model with face tracking support.
 
 ## Build
-this project can be built using MSVC 141 & 142, and cmake version > 3.13
+this project can be built using MSVC 141 & 142, and cmake version > 3.13  
+*Recommendation: For easy building, use Visual Studio 2019 with the workload "Desktop development with C++".*
 
 ## Iolive Third Party Libraries
 * [GLFW](https://github.com/glfw/glfw)
