@@ -88,7 +88,7 @@ namespace Iolive {
 		glViewport(0, 0, width, height);
 
 		float* clearColor = MainGui::Get().ColorEdit_ClearColor;
-		glClearColor(clearColor[0], clearColor[1], clearColor[2], 1.0f);
+		glClearColor(clearColor[0], clearColor[1], clearColor[2], .0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		MainGui::Get().Draw(this);
