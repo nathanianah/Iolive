@@ -147,7 +147,7 @@ namespace Iolive {
 		std::map<int, Device> CameraDevicesMap; // Camera Devices map
 		int SelectedCameraId = 0; // default camera is 0
 
-		float ColorEdit_ClearColor[3] = { 0.22f, 1.0f, 0.07f }; // default neon green.
+		float ColorEdit_ClearColor[4] = { 0.22f, 1.0f, 0.07f, 0.0f }; // default transparent neon green.
 
 		Hotkeys<ModelMotion*> GuiHotkeys;
 		int doEditHotkeys = -1;

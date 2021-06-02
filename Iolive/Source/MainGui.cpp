@@ -294,7 +294,7 @@ namespace Iolive {
 				if (ImGui::BeginTabItem("Settings"))
 				{
 					ImGui::PushItemWidth(ImGui::GetWindowSize().x / 2.25);
-					ImGui::ColorEdit3("Clear Color", ColorEdit_ClearColor, ImGuiColorEditFlags_DisplayRGB);
+					ImGui::ColorEdit4("Clear Color", ColorEdit_ClearColor, ImGuiColorEditFlags_DisplayRGB);
 
 					if (Checkbox_WindowVisible.Draw())
 					{

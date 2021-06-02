@@ -98,6 +98,8 @@ namespace Iolive {
 		void LoadHotkeys();
 		void OnHotkeysSaved(int index, ModelMotion* motion);
 
+		void LoadModelParams();
+
 		void DoOptimizeParameters();
 		void BindDefaultParametersWithFace();
 		void BindDefaultParametersWithGui();

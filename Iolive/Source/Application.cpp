@@ -88,7 +88,7 @@ namespace Iolive {
 		glViewport(0, 0, width, height);
 
 		float* clearColor = MainGui::Get().ColorEdit_ClearColor;
-		glClearColor(clearColor[0], clearColor[1], clearColor[2], .0f);
+		glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		MainGui::Get().Draw(this);
@@ -207,12 +207,36 @@ namespace Iolive {
 				if (jsonVersion == kCurrentJsonVersion)
 				{
 					LoadHotkeys();
+					LoadModelParams();
 					return;
 				}
 			}
 		}
 
 		CreateNewHotkeys(ioliveSettingsPath.c_str());
+	}
+
+	void Application::LoadModelParams()
+	{
+		auto& document = m_JsonManager.document;
+		Model2D* model = m_UserModel.GetModel2D();
+
+		if (document.HasMember("modelParams"))
+		{
+			auto& modelParams = document["modelParams"].GetObjectA();
+			if (modelParams.HasMember("scale"))
+			{
+				model->SetModelScale(modelParams["scale"].GetFloat());
+			}
+			if (modelParams.HasMember("translateX"))
+			{
+				model->SetModelTranslateX(modelParams["translateX"].GetFloat());
+			}
+			if (modelParams.HasMember("translateY"))
+			{
+				model->SetModelTranslateY(modelParams["translateY"].GetFloat());
+			}
+		}
 	}
 
 	void Application::CreateNewHotkeys(const wchar_t* outFilePath)
@@ -390,6 +414,22 @@ namespace Iolive {
 	void Application::OnScrollCallback(double xoffset, double yoffset)
 	{
 		Application* app = Application::Get();
+		auto& jsonManager = app->m_JsonManager;
+		auto& document = jsonManager.document;
+		auto& docAllocator = document.GetAllocator();
+		
+		
+		if (!document.HasMember("modelParams"))
+		{
+			document.AddMember("modelParams", rapidjson::Value(rapidjson::kObjectType), docAllocator);
+		}
+
+		auto& modelParams = document["modelParams"].GetObjectA();
+		if (!modelParams.HasMember("scale"))
+		{
+			modelParams.AddMember("scale", 0.0f, docAllocator);
+		}
+
 		if (app->m_UserModel.IsModelInitialized())
 		{
 			float scale = yoffset / 12;
@@ -398,9 +438,16 @@ namespace Iolive {
 
 			float nextModelScale = model->GetModelScale() + scale;
 			if (nextModelScale >= 0.0f)
+			{
 				model->SetModelScale(nextModelScale);
+				modelParams["scale"].SetFloat(nextModelScale);
+			}
 			else
+			{
 				model->SetModelScale(0.0f);
+				modelParams["scale"].SetFloat(0.0f);
+			}
+			jsonManager.SaveJson((app->m_UserModel.GetModel2D()->GetModelDir() + kSettingsFileName).c_str());
 		}
 	}
 
@@ -409,6 +456,36 @@ namespace Iolive {
 		static bool hasReleased = true;
 		static double lastX = -1.0;
 		static double lastY = -1.0;
+
+		Application* app = Application::Get();
+		auto& jsonManager = app->m_JsonManager;
+		auto& document = jsonManager.document;
+		auto& docAllocator = document.GetAllocator();
+
+		if (!document.HasMember("modelParams"))
+		{
+			document.AddMember("modelParams", rapidjson::Value(rapidjson::kObjectType), docAllocator);
+		}
+		auto& modelParams = document["modelParams"].GetObjectA();
+		if (!modelParams.HasMember("translateX"))
+		{
+			modelParams.AddMember("translateX", 0.0f, docAllocator);
+		}
+		if (!modelParams.HasMember("translateY"))
+		{
+			modelParams.AddMember("translateY", 0.0f, docAllocator);
+		}
+
+		if (!pressed && !hasReleased)
+		{
+			float modelX = app->m_UserModel.GetModel2D()->GetModelTranslateX();
+			float modelY = app->m_UserModel.GetModel2D()->GetModelTranslateY();
+			modelParams["translateX"].SetFloat(modelX);
+			modelParams["translateY"].SetFloat(modelY);
+
+			jsonManager.SaveJson((app->m_UserModel.GetModel2D()->GetModelDir() + kSettingsFileName).c_str());
+		}
+
 
 		if (!pressed)
 		{
