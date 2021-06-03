@@ -12,8 +12,20 @@ namespace Iolive {
 		: m_Window(Window::Create(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)),
 		m_Ioface(Ioface()),
 		m_JsonManager(JsonManager()),
+		w_JsonManager(JsonManager()),
 		flags_StopCapture(true)
 	{
+		w_JsonManager.ReadJson(kSettingsFileName);
+		auto& document = w_JsonManager.document;
+
+		if (document.HasMember("bg-color"))
+		{
+			auto bgcolor = MainGui::Get().ColorEdit_ClearColor;
+			for (int i = 0; i < 4; i++)
+				bgcolor[i] = document["bg-color"][i].GetFloat();
+			//float* value= document["bg-color"].GetArray();
+		}
+
 		auto _stackElapsed = Logger::StackCallback([](float elapsed_ms) {
 			ExampleAppLog::AddLogf("[Iolive][I] App initialization passed: %.fms\n", elapsed_ms);
 		});

@@ -124,7 +124,8 @@ namespace Iolive {
 		// face capturing thread
 		std::thread m_FaceCaptureThread;
 		
-		JsonManager m_JsonManager;
+		JsonManager m_JsonManager; //settings for model
+		JsonManager w_JsonManager; //settings for window
 
 		// Optimized parameter for Live2D model
 		DefaultParameter::ParametersValue OptimizedParameter = {};

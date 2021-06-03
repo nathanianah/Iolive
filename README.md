@@ -1,4 +1,6 @@
-##### Forked from Wahayu's repo: Editing and adding whatever features I like
+##### Forked from Wahayu's repo: Editing and adding whatever features:
+- Add transparency to model background
+- Add modelParams values- persistent changes to scale/position
 <hr>
 
 # Iolive

@@ -294,7 +294,24 @@ namespace Iolive {
 				if (ImGui::BeginTabItem("Settings"))
 				{
 					ImGui::PushItemWidth(ImGui::GetWindowSize().x / 2.25);
-					ImGui::ColorEdit4("Clear Color", ColorEdit_ClearColor, ImGuiColorEditFlags_DisplayRGB);
+					auto oldColor = *ColorEdit_ClearColor;
+					ImGui::ColorEdit4("Clear Color", ColorEdit_ClearColor, ImGuiColorEditFlags_AlphaBar);
+
+					//write to settings file if color has changed
+					if(*ColorEdit_ClearColor!=oldColor)
+					{
+						Application* app = Application::Get();
+						auto& jsonManager = app->w_JsonManager;
+						auto& document = jsonManager.document;
+						auto& docAllocator = document.GetAllocator();
+
+						rapidjson::Value bgcolor(rapidjson::kArrayType);
+						document.SetObject();
+						for (float i : ColorEdit_ClearColor)
+							bgcolor.PushBack(i, docAllocator);
+						document.AddMember("bg-color", bgcolor, docAllocator);
+						jsonManager.SaveJson(kSettingsFileName);
+					}
 
 					if (Checkbox_WindowVisible.Draw())
 					{
