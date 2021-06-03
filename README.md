@@ -1,6 +1,7 @@
 ##### Forked from Wahayu's repo: Editing and adding whatever features:
-- Add transparency to model background
-- Add modelParams values- persistent changes to scale/position
+- Add transparency to model background with respective color editor
+- Add modelParams values to model json for persistent changes to scale/position
+- Add local settings json file for persistent changes to background color
 <hr>
 
 # Iolive
