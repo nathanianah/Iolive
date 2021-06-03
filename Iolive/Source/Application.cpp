@@ -488,14 +488,18 @@ namespace Iolive {
 			modelParams.AddMember("translateY", 0.0f, docAllocator);
 		}
 
+		//save position coordinates if recently released
 		if (!pressed && !hasReleased)
 		{
-			float modelX = app->m_UserModel.GetModel2D()->GetModelTranslateX();
-			float modelY = app->m_UserModel.GetModel2D()->GetModelTranslateY();
-			modelParams["translateX"].SetFloat(modelX);
-			modelParams["translateY"].SetFloat(modelY);
+			if (app->m_UserModel.IsModelInitialized())
+			{
+				float modelX = app->m_UserModel.GetModel2D()->GetModelTranslateX();
+				float modelY = app->m_UserModel.GetModel2D()->GetModelTranslateY();
+				modelParams["translateX"].SetFloat(modelX);
+				modelParams["translateY"].SetFloat(modelY);
 
-			jsonManager.SaveJson((app->m_UserModel.GetModel2D()->GetModelDir() + kSettingsFileName).c_str());
+				jsonManager.SaveJson((app->m_UserModel.GetModel2D()->GetModelDir() + kSettingsFileName).c_str());
+			}
 		}
 
 
