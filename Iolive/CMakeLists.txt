@@ -58,6 +58,7 @@ PRIVATE
 
 	# header files
 	Source/Application.hpp
+	
 	Source/Window.hpp
 	Source/MainGui.hpp
 	Source/GUIComponent/Checkbox.hpp
@@ -81,6 +82,7 @@ target_include_directories(Iolive
 PRIVATE
 	${OPENGL_INCLUDE_DIRS}
 	${IOFACE_INCLUDE_DIR}
+	${IONET_INCLUDE_DIR}
 	${IOLIVE_VENDOR_PATH}/stb/
 	${IOLIVE_VENDOR_PATH}/imgui/
 	${IOLIVE_VENDOR_PATH}/rapidjson/include
@@ -90,6 +92,7 @@ target_link_libraries(Iolive
 PRIVATE
 	${OPENGL_LIBRARIES}
 	Ioface
+	Ionet
 	glew_s	  # static glew
 	glfw
 	Framework # cubism framework

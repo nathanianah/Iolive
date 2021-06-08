@@ -27,3 +27,4 @@ endif()
 
 add_subdirectory(Ioface)
 add_subdirectory(Iolive)
+add_subdirectory(Ionet)

@@ -1,3 +1,4 @@
+#define WIN32_LEAN_AND_MEAN
 #if IOLIVE_DEBUG == 0
 #include <windows.h>
 #endif
