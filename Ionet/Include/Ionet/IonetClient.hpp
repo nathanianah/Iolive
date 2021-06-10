@@ -1,10 +1,15 @@
 #pragma once
-#include "olcPGEX_Network.h"
-
+#include <Ionet/olcPGEX_Network.h>
+#include <Ionet/IonetCommon.hpp>
 
 namespace ionet {
-	class IonetClient : olc::net::client_interface<int>
+	class IonetClient : public olc::net::client_interface<IonetMessageHeader>
 	{
-		void Test();
+	public:
+		IonetClient(std::string address, uint16_t port);
+
+		void Update();
+		void Ping();
+		void JoinRoom(uint32_t room_id);
 	};
 }
