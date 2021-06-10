@@ -1,8 +1,8 @@
 #include "Ionet/IonetClient.hpp"
 
 int main() {
-	ionet::IonetClient client("35.193.191.169", 60000);
-	// ionet::IonetClient client("127.0.0.1", 60000);
+	//ionet::IonetClient client("35.193.191.169", 60000);
+	ionet::IonetClient client("127.0.0.1", 60000);
 
 	auto start = std::chrono::system_clock::now();
 
@@ -32,8 +32,7 @@ int main() {
 		if (key[0] && !old_key[0]) client.Ping();
 		if (key[1] && !old_key[1]) client.JoinRoom(0);
 		if (key[2] && !old_key[2]) client.JoinRoom(1);
-		if (key[3] && !old_key[3]) client.ListRooms();
-		if (key[4] && !old_key[4]) client.PrintRooms();
+		if (key[3] && !old_key[3]) { client.ListRooms(); client.PrintRooms(); }
 		for (int i = 0; i < 5; i++) old_key[i] = key[i];
 
 		client.Update();
