@@ -54,6 +54,14 @@ namespace ionet {
 				std::cout << "Already in join room " << msg_factory.room_id << std::endl;
 			}
 			break;
+			case ionet::IonetMessageHeader::SEND_ROOM:
+			{
+				ionet::IonetMessageSendRoom msg_factory;
+				msg_factory.Unload(msg);
+				std::cout << "Obtained room " << msg_factory.room_id << std::endl;
+				m_rooms.push_back(msg_factory.room_id);
+			}
+			break;
 			}
 		}
 	}
@@ -66,12 +74,25 @@ namespace ionet {
 		Send(msg);
 	}
 
-	
 	void IonetClient::JoinRoom(uint32_t room_id)
 	{
 		IonetMessageJoinRoom msg_factory;
 		msg_factory.room_id = room_id;
 		auto msg = msg_factory.Populate();
 		Send(msg);
+	}
+
+	void IonetClient::ListRooms()
+	{
+		m_rooms.clear();
+		IonetMessageListRooms msg_factory;
+		Send(msg_factory.Populate());
+	}
+
+	void IonetClient::PrintRooms()
+	{
+		std::cout << "Rooms: ";
+		for (uint32_t r : m_rooms) std::cout << r << " ";
+		std::cout << std::endl;
 	}
 }

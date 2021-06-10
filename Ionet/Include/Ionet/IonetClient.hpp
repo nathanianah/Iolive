@@ -11,5 +11,9 @@ namespace ionet {
 		void Update();
 		void Ping();
 		void JoinRoom(uint32_t room_id);
+		void ListRooms();
+		void PrintRooms();
+	private:
+		std::list<uint32_t> m_rooms;
 	};
 }

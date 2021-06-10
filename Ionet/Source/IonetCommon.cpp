@@ -72,4 +72,38 @@ namespace ionet {
 		}
 		input >> room_id;
 	}
+
+	olc::net::message<IonetMessageHeader> IonetMessageListRooms::Populate()
+	{
+		olc::net::message<IonetMessageHeader> msg;
+		msg.header.id = IonetMessageHeader::LIST_ROOMS;
+		return msg;
+	}
+	//Do we need unload?
+	void IonetMessageListRooms::Unload(olc::net::message<IonetMessageHeader> input)
+	{
+		if (input.header.id != IonetMessageHeader::LIST_ROOMS)
+		{
+			// TODO: MY BRAIN DOESN"T WORK, reword this.
+			throw std::invalid_argument("Tried to unload wrong header.");
+		}
+	}
+
+	olc::net::message<IonetMessageHeader> IonetMessageSendRoom::Populate()
+	{
+		olc::net::message<IonetMessageHeader> msg;
+		msg.header.id = IonetMessageHeader::SEND_ROOM;
+		msg << room_id;
+		return msg;
+	}
+
+	void IonetMessageSendRoom::Unload(olc::net::message<IonetMessageHeader> input)
+	{
+		if (input.header.id != IonetMessageHeader::SEND_ROOM)
+		{
+			// TODO: MY BRAIN DOESN"T WORK, reword this.
+			throw std::invalid_argument("Tried to unload wrong header.");
+		}
+		input >> room_id;
+	}
 }

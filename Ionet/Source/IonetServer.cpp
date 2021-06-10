@@ -98,7 +98,18 @@ namespace ionet {
 				}
 
 			}
-				break;
+			break;
+			case IonetMessageHeader::LIST_ROOMS:
+			{
+				std::cout << "[" << client->GetID() << "] Sending Room List" << std::endl;
+				//Loop through rooms and send room IDs
+				for (auto room : m_rooms) {
+					IonetMessageSendRoom response_factory;
+					response_factory.room_id = room.first;
+					client->Send(response_factory.Populate());
+				}
+			}
+			break;
 			default:
 				break;
 			}

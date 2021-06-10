@@ -6,8 +6,8 @@ int main() {
 
 	auto start = std::chrono::system_clock::now();
 
-	bool key[3] = { false, false, false };
-	bool old_key[3] = { false, false, false };
+	bool key[5] = { false, false, false, false, false };
+	bool old_key[5] = { false, false, false, false, false };
 
 	while (client.IsConnected())
 	{
@@ -25,13 +25,16 @@ int main() {
 			key[0] = GetAsyncKeyState('1') & 0x8000;
 			key[1] = GetAsyncKeyState('2') & 0x8000;
 			key[2] = GetAsyncKeyState('3') & 0x8000;
+			key[3] = GetAsyncKeyState('4') & 0x8000;
+			key[4] = GetAsyncKeyState('5') & 0x8000;
 		}
 
 		if (key[0] && !old_key[0]) client.Ping();
 		if (key[1] && !old_key[1]) client.JoinRoom(0);
 		if (key[2] && !old_key[2]) client.JoinRoom(1);
-
-		for (int i = 0; i < 3; i++) old_key[i] = key[i];
+		if (key[3] && !old_key[3]) client.ListRooms();
+		if (key[4] && !old_key[4]) client.PrintRooms();
+		for (int i = 0; i < 5; i++) old_key[i] = key[i];
 
 		client.Update();
 
