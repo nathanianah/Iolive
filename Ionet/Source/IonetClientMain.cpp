@@ -1,8 +1,8 @@
 #include "Ionet/IonetClient.hpp"
 
 int main() {
-	// ionet::IonetClient client("35.193.191.169", 60000);
-	ionet::IonetClient client("127.0.0.1", 60000);
+	ionet::IonetClient client("35.193.191.169", 60000);
+	// ionet::IonetClient client("127.0.0.1", 60000);
 
 	auto start = std::chrono::system_clock::now();
 
