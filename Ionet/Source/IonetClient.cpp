@@ -51,7 +51,7 @@ namespace ionet {
 			{
 				ionet::IonetMessageJoinRoomReject msg_factory;
 				msg_factory.Unload(msg);
-				std::cout << "Already in join room " << msg_factory.room_id << std::endl;
+				std::cout << "Already in room " << msg_factory.room_id << std::endl;
 			}
 			break;
 			}
