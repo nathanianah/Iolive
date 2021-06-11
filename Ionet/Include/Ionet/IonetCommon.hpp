@@ -2,6 +2,7 @@
 #include <Ionet/olcPGEX_Network.h>
 
 #include <chrono>
+#include <map>
 
 namespace ionet {
 
@@ -23,6 +24,18 @@ namespace ionet {
 	{
 		virtual olc::net::message<IonetMessageHeader> Populate() = 0;
 		virtual void Unload(olc::net::message<IonetMessageHeader> input) = 0;
+	};
+
+	struct IonetMessageModelParams : IonetMessage
+	{
+		struct Parameter {
+			int index;
+			float value;
+		};
+		olc::net::message<IonetMessageHeader> Populate();
+		void Unload(olc::net::message<IonetMessageHeader> input);
+
+		std::map<int, float> model_params;
 	};
 
 	struct IonetMessagePing : IonetMessage

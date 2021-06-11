@@ -106,4 +106,32 @@ namespace ionet {
 		}
 		input >> room_id;
 	}
+
+	olc::net::message<IonetMessageHeader> IonetMessageModelParams::Populate()
+	{
+		olc::net::message<IonetMessageHeader> msg;
+		msg.header.id = IonetMessageHeader::MODEL_PARAMS;
+		Parameter p;
+		for (const auto& [key, value] : model_params)
+		{
+			p.index = key;
+			p.value = value;
+			msg << p;
+		}
+		return msg;
+	}
+
+	void IonetMessageModelParams::Unload(olc::net::message<IonetMessageHeader> input)
+	{
+		if (input.header.id != IonetMessageHeader::MODEL_PARAMS)
+		{
+			// TODO: MY BRAIN DOESN"T WORK, reword this.
+			throw std::invalid_argument("Tried to unload wrong header.");
+		}
+		Parameter p;
+		while (input.size()) {
+			input >> p;
+			model_params[p.index] = p.value;
+		}
+	}
 }

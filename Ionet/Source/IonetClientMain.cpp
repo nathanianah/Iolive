@@ -33,6 +33,7 @@ int main() {
 		if (key[1] && !old_key[1]) client.JoinRoom(0);
 		if (key[2] && !old_key[2]) client.JoinRoom(1);
 		if (key[3] && !old_key[3]) { client.ListRooms(); client.PrintRooms(); }
+		if (key[4] && !old_key[4]) client.SendParams();
 		for (int i = 0; i < 5; i++) old_key[i] = key[i];
 
 		client.Update();

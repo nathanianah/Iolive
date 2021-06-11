@@ -13,7 +13,8 @@ namespace ionet {
 		void JoinRoom(uint32_t room_id);
 		void ListRooms();
 		void PrintRooms();
+		void SendParams();
 	private:
-		std::list<uint32_t> m_rooms;
+		std::vector<uint32_t> m_rooms;
 	};
 }
