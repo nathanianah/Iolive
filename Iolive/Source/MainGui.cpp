@@ -285,6 +285,29 @@ namespace Iolive {
 						Checkbox_EyeballFollowCursor.Draw(); // Checkbox eye ball follow cursor
 					}
 
+					if (ImGui::CollapsingHeader("Iolive Room"))
+					{
+						Checkbox_Networking.Draw();
+						if (Checkbox_Networking.IsChecked())
+						{
+							if (ImGui::BeginCombo("##ClientType", ClientTypes[SelectedClientType].c_str()))
+							{
+								for (int i = 0; i < 2; i++)
+								{
+									bool isSelected = (SelectedClientType == i);
+									if (ImGui::Selectable(ClientTypes[i].c_str(), isSelected))
+									{
+										// selected by user
+										SelectedClientType = i;
+										if (isSelected)
+											ImGui::SetItemDefaultFocus();
+									}
+								}
+								ImGui::EndCombo();
+							}
+						}
+					}
+
 					ImGui::EndTabItem();
 				}
 

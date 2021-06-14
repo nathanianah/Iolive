@@ -1,8 +1,8 @@
 #pragma once
 
-#define IOLIVE_GITHUB "https://github.com/wahyuandhika/Iolive"
+#define IOLIVE_GITHUB "https://github.com/nathanianah/Iolive"
 #define IOLIVE_MAJOR_VERSION_STR "21"
-#define IOLIVE_MINOR_VERSION_STR "01"
+#define IOLIVE_MINOR_VERSION_STR "06"
 
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 700

@@ -151,5 +151,9 @@ namespace Iolive {
 
 		Hotkeys<ModelMotion*> GuiHotkeys;
 		int doEditHotkeys = -1;
+
+		Checkbox Checkbox_Networking = Checkbox("Enable Networking", false);
+		int SelectedClientType = 0;
+		std::vector<std::string> ClientTypes = { "Send","Receive" };
 	};
 }
