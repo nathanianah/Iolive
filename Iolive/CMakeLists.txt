@@ -76,7 +76,7 @@ PRIVATE
 
 	# ImGui file
 	${IMGUI_SOURCES}
-)
+ "Source/NetworkingClient.h")
 
 target_include_directories(Iolive
 PRIVATE

@@ -3,6 +3,8 @@
 #include "Live2D/Live2DManager.hpp"
 #include <string>
 
+#include <Ionet/IonetClient.hpp>
+
 namespace Iolive {
 	void MainGui::InitializeImGui(GLFWwindow* window)
 	{
@@ -123,6 +125,94 @@ namespace Iolive {
 		}
 	}
 
+	void MainGui::DrawIonetRoom(Application* app)
+	{
+		Checkbox_Networking.Draw();
+		if (Checkbox_Networking.IsChecked())
+		{
+			if (!app->IsConnected())
+			{
+				// Draw connection inputs
+				ImGui::Text("Server Address/Port:");
+				ImGui::InputText("##ServerIP", Address, IM_ARRAYSIZE(Address));
+				ImGui::SameLine();
+				ImGui::InputInt("##Port", &Port);
+				if (ImGui::BeginCombo("##ClientType", ionet::kClientModes[SelectedClientType]))
+				{
+					for (int i = 0; i < ionet::kClientModes.size(); i++)
+					{
+						bool isSelected = (SelectedClientType == i);
+						if (ImGui::Selectable(ionet::kClientModes[i], isSelected))
+						{
+							// selected by user
+							SelectedClientType = i;
+							if (isSelected)
+								ImGui::SetItemDefaultFocus();
+						}
+					}
+					ImGui::EndCombo();
+				}
+				if (ImGui::Button("Connect")) {
+					ionet::ClientMode mode = ionet::ClientMode(SelectedClientType);
+					app->OnNetworkRequest(Address, Port, mode);
+				}
+			}
+			else
+			{
+				ImGui::Text("Connected to %s:%d", Address, Port);
+
+				if (!app->m_in_room)
+				{
+					std::vector<uint32_t> rooms = app->GetRooms();
+
+					ImGui::Text("Available Rooms: ");
+					ImGui::SameLine();
+					if (ImGui::SmallButton("Refresh")) {
+						app->RequestRooms();
+					}
+
+					if (ImGui::ListBoxHeader("##RoomList", rooms.size(), 5))
+					{
+						bool roomChanged = false;
+						for (const uint32_t room : rooms)
+						{
+							bool isSelected = SelectedRoom == room;
+							if (ImGui::Selectable(std::to_string(room).c_str(), isSelected))
+							{
+								ImGui::SetItemDefaultFocus();
+								if (SelectedRoom != room)
+								{
+									CurrentRoom = room;
+								}
+								SelectedRoom = room;
+							}
+						}
+						ImGui::ListBoxFooter();
+					}
+
+					ImGui::InputInt("##CurrentRoom", &CurrentRoom);
+					ImGui::SameLine();
+					if (ImGui::Button("Join"))
+					{
+						app->JoinRoom(CurrentRoom);
+					}
+				}
+				else
+				{
+					ImGui::Text("Joined Room %d", CurrentRoom);
+					if(ImGui::Button("Leave Room")){
+						app->m_in_room = false;
+					}
+				}
+
+				if (ImGui::Button("Disconnect from Server"))
+				{
+					app->m_client->Disconnect();
+				}
+			}
+		}
+	}
+
 	void MainGui::Draw(Application* app)
 	{
 		BeginImGuiFrame();
@@ -184,6 +274,11 @@ namespace Iolive {
 						{
 							// Parameter Scene
 							ParameterGUI.Draw();
+						}
+
+						if (ImGui::CollapsingHeader("Iolive Room"))
+						{
+							DrawIonetRoom(app);
 						}
 					}
 
@@ -283,29 +378,6 @@ namespace Iolive {
 
 						ImGui::Spacing(); ImGui::SameLine();
 						Checkbox_EyeballFollowCursor.Draw(); // Checkbox eye ball follow cursor
-					}
-
-					if (ImGui::CollapsingHeader("Iolive Room"))
-					{
-						Checkbox_Networking.Draw();
-						if (Checkbox_Networking.IsChecked())
-						{
-							if (ImGui::BeginCombo("##ClientType", ClientTypes[SelectedClientType].c_str()))
-							{
-								for (int i = 0; i < 2; i++)
-								{
-									bool isSelected = (SelectedClientType == i);
-									if (ImGui::Selectable(ClientTypes[i].c_str(), isSelected))
-									{
-										// selected by user
-										SelectedClientType = i;
-										if (isSelected)
-											ImGui::SetItemDefaultFocus();
-									}
-								}
-								ImGui::EndCombo();
-							}
-						}
 					}
 
 					ImGui::EndTabItem();

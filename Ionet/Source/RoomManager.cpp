@@ -1,9 +1,10 @@
 #include <Ionet/RoomManager.hpp>
+#include <Ionet/IonetCommon.hpp>
 #include <stdexcept>
 
 namespace ionet
 {
-    bool RoomManager::JoinRoom(uint32_t client_id, uint32_t room_id)
+    bool RoomManager::JoinRoom(uint32_t client_id, RoomId room_id)
     {
         LeaveRoom(client_id);
 
@@ -18,7 +19,7 @@ namespace ionet
         auto it = m_user_room.find(client_id);
         if (it != m_user_room.end())
         {
-            uint32_t room_id = it->second;
+            RoomId room_id = it->second;
             auto room_it = m_rooms.find(room_id);
             if (room_it != m_rooms.end())
             {
@@ -34,7 +35,7 @@ namespace ionet
         m_user_room.erase(client_id);
     }
 
-    uint32_t RoomManager::GetRoom(uint32_t client_id)
+    RoomId RoomManager::GetRoom(uint32_t client_id)
     {
         auto it = m_user_room.find(client_id);
         if (it == m_user_room.end())
@@ -44,16 +45,16 @@ namespace ionet
         return it->second;
     }
 
-    std::unordered_set<uint32_t> RoomManager::GetAllRoomIds()
+    std::unordered_set<RoomId> RoomManager::GetAllRoomIds()
     {
-        std::unordered_set<uint32_t> room_ids;
+        std::unordered_set<RoomId> room_ids;
         for (const auto& [room_id, clients] : m_rooms) {
             room_ids.insert(room_id);
         }
         return room_ids;
     }
 
-    std::unordered_set<uint32_t> RoomManager::GetUsers(uint32_t room_id)
+    std::unordered_set<uint32_t> RoomManager::GetUsers(RoomId room_id)
     {
         auto it = m_rooms.find(room_id);
         if (it == m_rooms.end())

@@ -2,6 +2,7 @@
 
 #define _HAS_STD_BYTE 0 // this can fix "byte is ambigous between windows.h & c++17"
 #define IMGUI_IMPL_OPENGL_LOADER_GLEW
+
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <imgui_impl_glfw.h>
@@ -19,6 +20,7 @@
 #include <vector>
 #include <array>
 #include <mutex>
+
 
 namespace Iolive {
 	class Application;
@@ -125,6 +127,8 @@ namespace Iolive {
 		void BeginImGuiFrame();
 		void EndImGuiFrame();
 
+		void DrawIonetRoom(Application* app);
+
 	public:
 		/* * *
 		* Public GUI Data
@@ -154,6 +158,9 @@ namespace Iolive {
 
 		Checkbox Checkbox_Networking = Checkbox("Enable Networking", false);
 		int SelectedClientType = 0;
-		std::vector<std::string> ClientTypes = { "Send","Receive" };
+		char Address[128] = "127.0.0.1"; //"35.193.191.169";
+		int Port = 60000;
+		uint32_t SelectedRoom;
+		int CurrentRoom; // TODO: Change this name...
 	};
 }

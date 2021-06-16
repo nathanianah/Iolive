@@ -1,8 +1,11 @@
 #include "Ionet/IonetClient.hpp"
 
 int main() {
-	ionet::IonetClient client("35.193.191.169", 60000);
-	//ionet::IonetClient client("127.0.0.1", 60000);
+	// ionet::IonetClient client("35.193.191.169", 60000);
+	std::string address = "127.0.0.1";
+	uint32_t port = 60000;
+	ionet::IonetClient client;
+	client.Connect(address, port);
 
 	auto start = std::chrono::system_clock::now();
 
@@ -32,8 +35,15 @@ int main() {
 		if (key[0] && !old_key[0]) client.Ping();
 		if (key[1] && !old_key[1]) client.JoinRoom(0);
 		if (key[2] && !old_key[2]) client.JoinRoom(1);
-		if (key[3] && !old_key[3]) { client.ListRooms(); client.PrintRooms(); }
-		if (key[4] && !old_key[4]) client.SendParams();
+		if (key[3] && !old_key[3]) { client.RequestRooms(); }
+		// TODO: Make random params.
+		if (key[4] && !old_key[4]) {
+			//make dummy parameters
+			std::map<int, float> params;
+			for (int i = 0; i < 26; i++)
+				params[i] = (float) rand() / RAND_MAX;
+			client.SendParams(params);
+		}
 		for (int i = 0; i < 5; i++) old_key[i] = key[i];
 
 		client.Update();

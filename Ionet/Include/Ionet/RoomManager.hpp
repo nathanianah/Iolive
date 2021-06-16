@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <Ionet/IonetCommon.hpp>
+
 namespace ionet
 {
 	class RoomManager
@@ -11,14 +13,14 @@ namespace ionet
 		bool JoinRoom(uint32_t client_id, uint32_t room_id);
 		void LeaveRoom(uint32_t client_id);
 
-		uint32_t GetRoom(uint32_t client_id);
-		std::unordered_set<uint32_t> GetUsers(uint32_t room_id);
-		std::unordered_set<uint32_t> GetAllRoomIds();
+		RoomId GetRoom(uint32_t client_id);
+		std::unordered_set<RoomId> GetUsers(RoomId room_id);
+		std::unordered_set<RoomId> GetAllRoomIds();
 
 	private:
         // Map room ID to a list of client IDs.
-        std::unordered_map<uint32_t, std::unordered_set<uint32_t>> m_rooms;
+        std::unordered_map<RoomId, std::unordered_set<uint32_t>> m_rooms;
         // Map client ID to current room.
-        std::unordered_map<uint32_t, uint32_t> m_user_room;
+        std::unordered_map<uint32_t, RoomId> m_user_room;
 	};
 }

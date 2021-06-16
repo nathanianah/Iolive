@@ -73,7 +73,6 @@
 #define _WIN32_WINNT 0x0A00
 #endif
 #endif
-
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #define ASIO_STANDALONE
 

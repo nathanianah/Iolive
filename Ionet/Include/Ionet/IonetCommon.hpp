@@ -5,6 +5,7 @@
 #include <map>
 
 namespace ionet {
+    typedef uint32_t RoomId;
 
 	enum class IonetMessageHeader : uint32_t
 	{
@@ -17,7 +18,7 @@ namespace ionet {
 		JOIN_ROOM_REJECTED,
 
 		LIST_ROOMS,
-		SEND_ROOM,
+		SEND_ROOMS,
 	};
 
 	struct IonetMessage
@@ -51,7 +52,7 @@ namespace ionet {
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
 
-		uint32_t room_id;
+		RoomId room_id;
 	};
 
 	struct IonetMessageJoinRoomAccept : public IonetMessage
@@ -59,7 +60,7 @@ namespace ionet {
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
 
-		uint32_t room_id;
+		RoomId room_id;
 	};
 
 	struct IonetMessageJoinRoomReject : public IonetMessage
@@ -67,7 +68,7 @@ namespace ionet {
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
 
-		uint32_t room_id;
+		RoomId room_id;
 	};
 
 	struct IonetMessageListRooms : public IonetMessage
@@ -76,11 +77,11 @@ namespace ionet {
 		void Unload(olc::net::message<IonetMessageHeader> input);
 	};
 
-	struct IonetMessageSendRoom : public IonetMessage
+	struct IonetMessageSendRooms : public IonetMessage
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
 
-		uint32_t room_id;
+		std::vector<RoomId> room_ids;
 	};
 }

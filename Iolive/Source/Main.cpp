@@ -1,5 +1,6 @@
-#define WIN32_LEAN_AND_MEAN
+#include <asio.hpp>
 #if IOLIVE_DEBUG == 0
+
 #include <windows.h>
 #endif
 #include "Application.hpp"
@@ -16,6 +17,5 @@ int main()
 	Iolive::Application::Get()->Run();
 
 	Iolive::Application::Release();
-
 	return 0;
 }

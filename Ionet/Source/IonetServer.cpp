@@ -9,7 +9,7 @@ namespace ionet {
     public:
         IonetServer(uint16_t port) : olc::net::server_interface<IonetMessageHeader>(port) {}
 
-        void MessageRoom(const olc::net::message<IonetMessageHeader>& msg, uint32_t room_id,
+        void MessageRoom(const olc::net::message<IonetMessageHeader>& msg, RoomId room_id,
             std::shared_ptr<olc::net::connection<IonetMessageHeader>> pIgnoreClient = nullptr)
         {
             for (const auto& client : m_deqConnections) {
@@ -103,7 +103,7 @@ namespace ionet {
             else
             {
                 // Reject because already exists.
-                std::cout << "[" << client_id << "] Already in room " << msg_factory.room_id << std::endl;
+                std::cout << "[" << client_id << "] Failed to join room " << msg_factory.room_id << std::endl;
                 IonetMessageJoinRoomReject response_factory;
                 response_factory.room_id = msg_factory.room_id;
                 MessageClient(client, response_factory.Populate());
@@ -112,19 +112,18 @@ namespace ionet {
 
         void HandleListRooms(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
             std::cout << "[" << client->GetID() << "] Sending Room List" << std::endl;
-            //Loop through rooms and send room IDs
-            for (const uint32_t& room : m_room_manager.GetAllRoomIds()) {
-                IonetMessageSendRoom response_factory;
-                response_factory.room_id = room;
-                MessageClient(client, response_factory.Populate());
-            }
+            //Loop through rooms and send room IDs.
+			IonetMessageSendRooms response_factory;
+            std::unordered_set<RoomId> rooms = m_room_manager.GetAllRoomIds();
+			response_factory.room_ids = std::vector<RoomId>(rooms.begin(), rooms.end());
+			MessageClient(client, response_factory.Populate());
         }
 
         void HandleModelParams(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
-            std::cout << "[" << client->GetID() << "] Forwarding model params" << std::endl;
+            // std::cout << "[" << client->GetID() << "] Forwarding model params" << std::endl;
             try
             {
-				uint32_t room_id = m_room_manager.GetRoom(client->GetID());
+				RoomId room_id = m_room_manager.GetRoom(client->GetID());
 				MessageRoom(msg, room_id, client);
             }
             catch (std::exception e)

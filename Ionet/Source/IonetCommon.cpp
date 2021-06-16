@@ -89,22 +89,30 @@ namespace ionet {
 		}
 	}
 
-	olc::net::message<IonetMessageHeader> IonetMessageSendRoom::Populate()
+	olc::net::message<IonetMessageHeader> IonetMessageSendRooms::Populate()
 	{
 		olc::net::message<IonetMessageHeader> msg;
-		msg.header.id = IonetMessageHeader::SEND_ROOM;
-		msg << room_id;
+		msg.header.id = IonetMessageHeader::SEND_ROOMS;
+		for (const RoomId& room_id : room_ids)
+		{
+			msg << room_id;
+		}
 		return msg;
 	}
 
-	void IonetMessageSendRoom::Unload(olc::net::message<IonetMessageHeader> input)
+	void IonetMessageSendRooms::Unload(olc::net::message<IonetMessageHeader> input)
 	{
-		if (input.header.id != IonetMessageHeader::SEND_ROOM)
+		if (input.header.id != IonetMessageHeader::SEND_ROOMS)
 		{
 			// TODO: MY BRAIN DOESN"T WORK, reword this.
 			throw std::invalid_argument("Tried to unload wrong header.");
 		}
-		input >> room_id;
+		RoomId room_id;
+		while (input.size())
+		{
+			input >> room_id;
+			room_ids.push_back(room_id);
+		}
 	}
 
 	olc::net::message<IonetMessageHeader> IonetMessageModelParams::Populate()

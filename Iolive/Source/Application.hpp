@@ -15,6 +15,8 @@
 #include "Utility/JsonManager.hpp"
 #include <thread>
 #include <mutex>
+#include <ionet/IonetClient.hpp>
+#include "NetworkingClient.h"
 
 namespace Iolive {
 	constexpr double kCurrentJsonVersion = 0.1;
@@ -55,7 +57,7 @@ namespace Iolive {
 		Model2D* m_Model2D = nullptr;
 	};
 
-	class Application
+	class Application : public NetworkingClient
 	{
 	public:
 		inline static std::mutex s_MtxAppInstance;
@@ -83,6 +85,7 @@ namespace Iolive {
 
 		void OnUpdate();
 		void OnRender();
+		void OnNetworkUpdate();
 		friend class MainGui;
 
 		/* 
@@ -100,9 +103,12 @@ namespace Iolive {
 
 		void LoadModelParams();
 
+		void OnNetworkRequest(std::string address, uint16_t port, ionet::ClientMode client_mode);
+
 		void DoOptimizeParameters();
 		void BindDefaultParametersWithFace();
 		void BindDefaultParametersWithGui();
+		void BindDefaultParametersWithNetwork();
 
 		/*
 		* Window callback as static method
@@ -110,6 +116,13 @@ namespace Iolive {
 		static void OnFrameResizedCallback(int width, int height);
 		static void OnScrollCallback(double xoffset, double yoffset);
 		static void OnCursorPosCallback(bool pressed, double xpos, double ypos);
+
+		// From networking client.
+		bool IsConnected();
+		void RequestRooms();
+		void JoinRoom(ionet::RoomId room_id);
+		std::vector<ionet::RoomId> GetRooms();
+
 
 	private:
 		// Skeleton instance as member
@@ -132,5 +145,7 @@ namespace Iolive {
 
 		// a flags
 		bool flags_StopCapture;
+
+		std::unique_ptr<ionet::IonetClient> m_client;
 	};
 } // namespace Iolive

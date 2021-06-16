@@ -26,7 +26,7 @@ PRIVATE
 )
 
 target_include_directories(Ionet
-PRIVATE
+PUBLIC
     ${IONET_INCLUDE_DIR}
     ${IONET_DEPENDENCIES_PATH}/asio/include
 )
