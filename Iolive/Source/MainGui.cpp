@@ -199,14 +199,15 @@ namespace Iolive {
 				}
 				else
 				{
-					ImGui::Text("Joined Room %d", CurrentRoom);
+					ImGui::Text("Joined Room %d in %s mode", CurrentRoom, ionet::kClientModes[SelectedClientType]);
 					if(ImGui::Button("Leave Room")){
-						app->m_in_room = false;
+						app->LeaveRoom();
 					}
 				}
 
 				if (ImGui::Button("Disconnect from Server"))
 				{
+					app->LeaveRoom();
 					app->m_client->Disconnect();
 				}
 			}
@@ -396,7 +397,7 @@ namespace Iolive {
 					if(*ColorEdit_ClearColor!=oldColor)
 					{
 						Application* app = Application::Get();
-						auto& jsonManager = app->w_JsonManager;
+						auto& jsonManager = app->m_AppJsonManager;
 						auto& document = jsonManager.document;
 						auto& docAllocator = document.GetAllocator();
 

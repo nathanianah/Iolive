@@ -73,16 +73,30 @@ namespace ionet {
 		input >> room_id;
 	}
 
-	olc::net::message<IonetMessageHeader> IonetMessageListRooms::Populate()
+	olc::net::message<IonetMessageHeader> IonetMessageLeaveRoom::Populate()
 	{
 		olc::net::message<IonetMessageHeader> msg;
-		msg.header.id = IonetMessageHeader::LIST_ROOMS;
+		msg.header.id = IonetMessageHeader::LEAVE_ROOM;
 		return msg;
 	}
-	//Do we need unload?
-	void IonetMessageListRooms::Unload(olc::net::message<IonetMessageHeader> input)
+	void IonetMessageLeaveRoom::Unload(olc::net::message<IonetMessageHeader> input)
 	{
-		if (input.header.id != IonetMessageHeader::LIST_ROOMS)
+		if (input.header.id != IonetMessageHeader::LEAVE_ROOM)
+		{
+			// TODO: MY BRAIN DOESN"T WORK, reword this.
+			throw std::invalid_argument("Tried to unload wrong header.");
+		}
+	}
+
+	olc::net::message<IonetMessageHeader> IonetMessageRequestRooms::Populate()
+	{
+		olc::net::message<IonetMessageHeader> msg;
+		msg.header.id = IonetMessageHeader::REQUEST_ROOMS;
+		return msg;
+	}
+	void IonetMessageRequestRooms::Unload(olc::net::message<IonetMessageHeader> input)
+	{
+		if (input.header.id != IonetMessageHeader::REQUEST_ROOMS)
 		{
 			// TODO: MY BRAIN DOESN"T WORK, reword this.
 			throw std::invalid_argument("Tried to unload wrong header.");

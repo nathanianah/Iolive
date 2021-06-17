@@ -12,11 +12,11 @@ namespace Iolive {
         : m_Window(Window::Create(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT)),
         m_Ioface(Ioface()),
         m_JsonManager(JsonManager()),
-        w_JsonManager(JsonManager()),
+        m_AppJsonManager(JsonManager()),
         flags_StopCapture(true)
     {
-        w_JsonManager.ReadJson(kSettingsFileName);
-        auto& document = w_JsonManager.document;
+        m_AppJsonManager.ReadJson(kSettingsFileName);
+        auto& document = m_AppJsonManager.document;
 
         if (document.HasMember("bg-color"))
         {
@@ -878,6 +878,12 @@ namespace Iolive {
     void Application::JoinRoom(ionet::RoomId room_id)
     {
         m_client->JoinRoom(room_id);
+    }
+
+    void Application::LeaveRoom()
+    {
+        m_client->LeaveRoom();
+        m_in_room = false;
     }
 
     std::vector<ionet::RoomId> Application::GetRooms()

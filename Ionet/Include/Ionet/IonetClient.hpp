@@ -21,6 +21,7 @@ namespace ionet {
         void Update();
         void Ping();
         void JoinRoom(RoomId room_id);
+        void LeaveRoom();
         void RequestRooms();
         virtual void SendParams(std::map<int, float> parameters);
 

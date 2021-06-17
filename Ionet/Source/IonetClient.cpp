@@ -19,7 +19,6 @@ namespace ionet {
         // TODO: Make rooms strings and not ints.
 
         // TODO: Names for clients???
-        // TODO: Leave Room.
 
         // TODO: Start/stop model transmission;
         // TODO: Networking on its own thread on application?
@@ -155,10 +154,17 @@ namespace ionet {
         Send(msg);
     }
 
+    void IonetClient::LeaveRoom()
+    {
+        m_rooms.clear();
+        IonetMessageRequestRooms msg_factory;
+        Send(msg_factory.Populate());
+    }
+
     void IonetClient::RequestRooms()
     {
         m_rooms.clear();
-        IonetMessageListRooms msg_factory;
+        IonetMessageRequestRooms msg_factory;
         Send(msg_factory.Populate());
     }
 

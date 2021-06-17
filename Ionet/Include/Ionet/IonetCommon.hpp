@@ -17,7 +17,9 @@ namespace ionet {
 		JOIN_ROOM_ACCEPTED,
 		JOIN_ROOM_REJECTED,
 
-		LIST_ROOMS,
+		LEAVE_ROOM,
+
+		REQUEST_ROOMS,
 		SEND_ROOMS,
 	};
 
@@ -71,7 +73,13 @@ namespace ionet {
 		RoomId room_id;
 	};
 
-	struct IonetMessageListRooms : public IonetMessage
+	struct IonetMessageLeaveRoom : public IonetMessage
+	{
+		olc::net::message<IonetMessageHeader> Populate();
+		void Unload(olc::net::message<IonetMessageHeader> input);
+	};
+
+	struct IonetMessageRequestRooms : public IonetMessage
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);

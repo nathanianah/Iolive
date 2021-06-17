@@ -121,6 +121,7 @@ namespace Iolive {
 		bool IsConnected();
 		void RequestRooms();
 		void JoinRoom(ionet::RoomId room_id);
+		void LeaveRoom();
 		std::vector<ionet::RoomId> GetRooms();
 
 
@@ -138,7 +139,7 @@ namespace Iolive {
 		std::thread m_FaceCaptureThread;
 		
 		JsonManager m_JsonManager; //settings for model
-		JsonManager w_JsonManager; //settings for window
+		JsonManager m_AppJsonManager; //settings for window
 
 		// Optimized parameter for Live2D model
 		DefaultParameter::ParametersValue OptimizedParameter = {};

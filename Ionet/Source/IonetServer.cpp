@@ -66,7 +66,10 @@ namespace ionet {
             case IonetMessageHeader::JOIN_ROOM:
                 HandleJoinRoom(client, msg);
                 break;
-            case IonetMessageHeader::LIST_ROOMS:
+            case IonetMessageHeader::LEAVE_ROOM:
+                HandleLeaveRoom(client, msg);
+                break;
+            case IonetMessageHeader::REQUEST_ROOMS:
                 HandleListRooms(client, msg);
                 break;
             case IonetMessageHeader::MODEL_PARAMS:
@@ -110,13 +113,18 @@ namespace ionet {
             }
         }
 
+        void HandleLeaveRoom(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
+            std::cout << "[" << client->GetID() << "] Leaving room " << std::endl;
+            m_room_manager.LeaveRoom(client->GetID());
+        }
+
         void HandleListRooms(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
             std::cout << "[" << client->GetID() << "] Sending Room List" << std::endl;
             //Loop through rooms and send room IDs.
-			IonetMessageSendRooms response_factory;
+            IonetMessageSendRooms response_factory;
             std::unordered_set<RoomId> rooms = m_room_manager.GetAllRoomIds();
-			response_factory.room_ids = std::vector<RoomId>(rooms.begin(), rooms.end());
-			MessageClient(client, response_factory.Populate());
+            response_factory.room_ids = std::vector<RoomId>(rooms.begin(), rooms.end());
+            MessageClient(client, response_factory.Populate());
         }
 
         void HandleModelParams(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
