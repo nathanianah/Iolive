@@ -27,7 +27,7 @@ namespace ionet {
 
     void IonetClient::Update()
     {
-        if (!Incoming().empty())
+        while (!Incoming().empty())
         {
             auto msg = Incoming().pop_front().msg;
             switch (msg.header.id)
@@ -68,7 +68,7 @@ namespace ionet {
     void IonetClient::HandleAcceptClient(olc::net::message<IonetMessageHeader> msg)
     {
         std::cout << "Server accepted connection." << std::endl;
-        RequestRooms();
+        // RequestRooms();
         if (m_client_accept_handler)
         {
             m_client_accept_handler();
