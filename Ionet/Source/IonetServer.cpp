@@ -114,7 +114,7 @@ namespace ionet {
         }
 
         void HandleLeaveRoom(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
-            std::cout << "[" << client->GetID() << "] Leaving room " << std::endl;
+            std::cout << "[" << client->GetID() << "] Leaving room " << m_room_manager.GetRoom(client->GetID()) << std::endl;
             m_room_manager.LeaveRoom(client->GetID());
         }
 
