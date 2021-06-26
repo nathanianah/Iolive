@@ -122,6 +122,8 @@ namespace ionet {
 			throw std::invalid_argument("Tried to unload wrong header.");
 		}
 		RoomId room_id;
+		// TODO: Find out why header size != input.size()
+		std::cout << "Send rooms body size: " << input.size() << std::endl;
 		while (input.size())
 		{
 			input >> room_id;

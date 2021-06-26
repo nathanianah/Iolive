@@ -26,7 +26,7 @@ namespace ionet
                 room_it->second.erase(client_id);
                 if (room_it->second.empty())
                 {
-                    m_rooms.erase(room_id);
+                    m_rooms.erase(room_it);
                 }
             }
         }

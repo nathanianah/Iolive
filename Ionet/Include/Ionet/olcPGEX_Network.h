@@ -67,6 +67,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
+#include <map>
 
 #ifdef _WIN32
 #ifndef _WIN32_WINNT
@@ -537,6 +538,7 @@ namespace olc
 							{
 								// it doesn't, so add this bodyless message to the connections
 								// incoming message queue
+								m_msgTemporaryIn.body.clear();
 								AddToIncomingMessageQueue();
 							}
 						}
@@ -878,13 +880,15 @@ namespace olc
 							if (OnClientConnect(newconn))
 							{								
 								// Connection allowed, so add to container of new connections
-								m_deqConnections.push_back(std::move(newconn));
+								uint32_t client_id = GetNextClientId();
+								m_mapConnections[client_id] = std::move(newconn);
 
 								// And very important! Issue a task to the connection's
 								// asio context to sit and wait for bytes to arrive!
-								m_deqConnections.back()->ConnectToClient(this, nIDCounter++);
 
-								std::cout << "[" << m_deqConnections.back()->GetID() << "] Connection Approved\n";
+								m_mapConnections[client_id]->ConnectToClient(this, client_id);
+
+								std::cout << "[" << m_mapConnections[client_id]->GetID() << "] Connection Approved\n";
 							}
 							else
 							{
@@ -920,14 +924,14 @@ namespace olc
 					// If we cant communicate with client then we may as 
 					// well remove the client - let the server know, it may
 					// be tracking it somehow
+					uint32_t client_id = client->GetID();
 					OnClientDisconnect(client);
 
 					// Off you go now, bye bye!
 					client.reset();
 
 					// Then physically remove it from the container
-					m_deqConnections.erase(
-						std::remove(m_deqConnections.begin(), m_deqConnections.end(), client), m_deqConnections.end());
+					m_mapConnections.erase(client_id);
 				}
 			}
 			
@@ -937,7 +941,7 @@ namespace olc
 				bool bInvalidClientExists = false;
 
 				// Iterate through all clients in container
-				for (auto& client : m_deqConnections)
+				for (auto& [client_id, client] : m_mapConnections)
 				{
 					// Check client is connected...
 					if (client && client->IsConnected())
@@ -961,8 +965,24 @@ namespace olc
 				// Remove dead clients, all in one go - this way, we dont invalidate the
 				// container as we iterated through it.
 				if (bInvalidClientExists)
-					m_deqConnections.erase(
-						std::remove(m_deqConnections.begin(), m_deqConnections.end(), nullptr), m_deqConnections.end());
+				{
+					RemoveDisconnectedClients();
+				}
+			}
+
+			void RemoveDisconnectedClients()
+			{
+				for (auto it = m_mapConnections.begin(); it != m_mapConnections.end(); )
+				{
+					if (it->second == nullptr)
+					{
+						it = m_mapConnections.erase(it);
+					}
+					else
+					{
+						++it;
+					}
+				}
 			}
 
 			// Force server to respond to incoming messages
@@ -988,6 +1008,16 @@ namespace olc
 		protected:
 			// This server class should override thse functions to implement
 			// customised functionality
+
+			virtual uint32_t GetNextClientId()
+			{
+				// TODO: Check for invalid ID.
+				while (m_mapConnections.find(nIDCounter) != m_mapConnections.end())
+				{
+					++nIDCounter;
+				}
+				return nIDCounter;
+			}
 
 			// Called when a client connects, you can veto the connection by returning false
 			virtual bool OnClientConnect(std::shared_ptr<connection<T>> client)
@@ -1020,7 +1050,7 @@ namespace olc
 			tsqueue<owned_message<T>> m_qMessagesIn;
 
 			// Container of active validated connections
-			std::deque<std::shared_ptr<connection<T>>> m_deqConnections;
+			std::map<uint32_t, std::shared_ptr<connection<T>>> m_mapConnections;
 
 			// Order of declaration is important - it is also the order of initialisation
 			asio::io_context m_asioContext;

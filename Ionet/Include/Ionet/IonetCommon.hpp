@@ -23,13 +23,15 @@ namespace ionet {
 		SEND_ROOMS,
 	};
 
-	struct IonetMessage
+	typedef olc::net::message<IonetMessageHeader> IonetMessage;
+
+	struct IonetMessageBase
 	{
 		virtual olc::net::message<IonetMessageHeader> Populate() = 0;
 		virtual void Unload(olc::net::message<IonetMessageHeader> input) = 0;
 	};
 
-	struct IonetMessageModelParams : IonetMessage
+	struct IonetMessageModelParams : IonetMessageBase
 	{
 		struct Parameter {
 			int index;
@@ -41,7 +43,7 @@ namespace ionet {
 		std::map<int, float> model_params;
 	};
 
-	struct IonetMessagePing : IonetMessage
+	struct IonetMessagePing : IonetMessageBase
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
@@ -49,7 +51,7 @@ namespace ionet {
 		std::chrono::time_point<std::chrono::system_clock> time;
 	};
 
-	struct IonetMessageJoinRoom : public IonetMessage
+	struct IonetMessageJoinRoom : public IonetMessageBase
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
@@ -57,7 +59,7 @@ namespace ionet {
 		RoomId room_id;
 	};
 
-	struct IonetMessageJoinRoomAccept : public IonetMessage
+	struct IonetMessageJoinRoomAccept : public IonetMessageBase
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
@@ -65,7 +67,7 @@ namespace ionet {
 		RoomId room_id;
 	};
 
-	struct IonetMessageJoinRoomReject : public IonetMessage
+	struct IonetMessageJoinRoomReject : public IonetMessageBase
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
@@ -73,19 +75,19 @@ namespace ionet {
 		RoomId room_id;
 	};
 
-	struct IonetMessageLeaveRoom : public IonetMessage
+	struct IonetMessageLeaveRoom : public IonetMessageBase
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
 	};
 
-	struct IonetMessageRequestRooms : public IonetMessage
+	struct IonetMessageRequestRooms : public IonetMessageBase
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);
 	};
 
-	struct IonetMessageSendRooms : public IonetMessage
+	struct IonetMessageSendRooms : public IonetMessageBase
 	{
 		olc::net::message<IonetMessageHeader> Populate();
 		void Unload(olc::net::message<IonetMessageHeader> input);

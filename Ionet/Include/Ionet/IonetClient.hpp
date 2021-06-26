@@ -1,6 +1,7 @@
 #pragma once
 #include <Ionet/olcPGEX_Network.h>
 #include <Ionet/IonetCommon.hpp>
+#include <queue>
 
 namespace ionet {
     constexpr std::array<const char*, 2> kClientModes({
@@ -33,17 +34,13 @@ namespace ionet {
         void SetSendRoomsHandler(std::function<void(std::vector<RoomId> room_ids)> handler);
         void SetModelParamsHandler(std::function<void(std::map<int, float> parameters)> handler);
 
-        std::vector<RoomId> GetRooms() {
-            return m_rooms;
-        };
-
     protected:
-        void HandleAcceptClient(olc::net::message<IonetMessageHeader> msg);
-        void HandlePing(olc::net::message <IonetMessageHeader>msg);
-        void HandleJoinRoomAccepted(olc::net::message<IonetMessageHeader> msg);
-        void HandleJoinRoomRejected(olc::net::message<IonetMessageHeader> msg);
-        void HandleSendRooms(olc::net::message<IonetMessageHeader> msg);
-        void HandleModelParams(olc::net::message<IonetMessageHeader> msg);
+        void HandleAcceptClient(IonetMessage msg);
+        void HandlePing(IonetMessage msg);
+        void HandleJoinRoomAccepted(IonetMessage msg);
+        void HandleJoinRoomRejected(IonetMessage msg);
+        void HandleSendRooms(IonetMessage msg);
+        void HandleModelParams(IonetMessage msg);
 
         std::function<void()> m_client_accept_handler;
         std::function<void(std::chrono::system_clock::duration ping)> m_ping_handler;
@@ -52,7 +49,7 @@ namespace ionet {
         std::function<void(std::vector<RoomId> room_ids)> m_send_rooms_handler;
         std::function<void(std::map<int, float> parameters)> m_model_params_handler;
 
-        std::vector<RoomId> m_rooms;
+        std::queue<IonetMessage> m_param_buffer;
     };
 
     class IonetSendClient : public IonetClient { };

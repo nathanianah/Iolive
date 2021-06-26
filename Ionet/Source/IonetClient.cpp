@@ -23,10 +23,16 @@ namespace ionet {
         // TODO: Start/stop model transmission;
         // TODO: Networking on its own thread on application?
         // Might need to look into this to separate fps from network.
+
+        // TODO: Send all parameters, not just defaults
+
+        // BUGS:
+		// TODO: Find out why header size != input.size()
     }
 
     void IonetClient::Update()
     {
+        bool has_model_params = false;
         while (!Incoming().empty())
         {
             auto msg = Incoming().pop_front().msg;
@@ -59,13 +65,27 @@ namespace ionet {
             break;
             case ionet::IonetMessageHeader::MODEL_PARAMS:
             {
-                HandleModelParams(msg);
+                if (!has_model_params)
+                {
+					has_model_params = true;
+					HandleModelParams(msg);
+                    m_param_buffer = {};
+                }
+                else
+                {
+                    m_param_buffer.push(msg);
+                }
             }
             }
         }
+        if (!has_model_params && !m_param_buffer.empty())
+        {
+            HandleModelParams(m_param_buffer.front());
+            m_param_buffer.pop();
+        }
     }
 
-    void IonetClient::HandleAcceptClient(olc::net::message<IonetMessageHeader> msg)
+    void IonetClient::HandleAcceptClient(IonetMessage msg)
     {
         std::cout << "Server accepted connection." << std::endl;
         // RequestRooms();
@@ -75,7 +95,7 @@ namespace ionet {
         }
     }
 
-    void IonetClient::HandlePing(olc::net::message<IonetMessageHeader> msg)
+    void IonetClient::HandlePing(IonetMessage msg)
     {
         ionet::IonetMessagePing msg_factory;
         msg_factory.Unload(msg);
@@ -88,7 +108,7 @@ namespace ionet {
         }
     }
 
-    void IonetClient::HandleJoinRoomAccepted(olc::net::message<IonetMessageHeader> msg)
+    void IonetClient::HandleJoinRoomAccepted(IonetMessage msg)
     {
         ionet::IonetMessageJoinRoomAccept msg_factory;
         msg_factory.Unload(msg);
@@ -100,7 +120,7 @@ namespace ionet {
         }
     }
 
-    void IonetClient::HandleJoinRoomRejected(olc::net::message<IonetMessageHeader> msg)
+    void IonetClient::HandleJoinRoomRejected(IonetMessage msg)
     {
         ionet::IonetMessageJoinRoomReject msg_factory;
         msg_factory.Unload(msg);
@@ -112,12 +132,11 @@ namespace ionet {
         }
     }
 
-    void IonetClient::HandleSendRooms(olc::net::message<IonetMessageHeader> msg)
+    void IonetClient::HandleSendRooms(IonetMessage msg)
     {
         ionet::IonetMessageSendRooms msg_factory;
         msg_factory.Unload(msg);
-        m_rooms = msg_factory.room_ids;
-        for (const RoomId& room_id : m_rooms)
+        for (const RoomId& room_id : msg_factory.room_ids)
         {
             std::cout << "Obtained room " << room_id << std::endl;
         }
@@ -128,7 +147,7 @@ namespace ionet {
         }
     }
 
-    void IonetClient::HandleModelParams(olc::net::message<IonetMessageHeader> msg)
+    void IonetClient::HandleModelParams(IonetMessage msg)
     {
         ionet::IonetMessageModelParams msg_factory;
         msg_factory.Unload(msg);
@@ -142,28 +161,24 @@ namespace ionet {
     {
         IonetMessagePing msg_factory;
         msg_factory.time = std::chrono::system_clock::now();
-        auto msg = msg_factory.Populate();
-        Send(msg);
+        Send(msg_factory.Populate());
     }
 
     void IonetClient::JoinRoom(RoomId room_id)
     {
         IonetMessageJoinRoom msg_factory;
         msg_factory.room_id = room_id;
-        auto msg = msg_factory.Populate();
-        Send(msg);
+        Send(msg_factory.Populate());
     }
 
     void IonetClient::LeaveRoom()
     {
-        m_rooms.clear();
-        IonetMessageRequestRooms msg_factory;
+        IonetMessageLeaveRoom msg_factory;
         Send(msg_factory.Populate());
     }
 
     void IonetClient::RequestRooms()
     {
-        m_rooms.clear();
         IonetMessageRequestRooms msg_factory;
         Send(msg_factory.Populate());
     }

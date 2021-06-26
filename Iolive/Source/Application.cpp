@@ -476,7 +476,7 @@ namespace Iolive {
             });
         m_client->SetModelParamsHandler(
             [this](std::map<int, float> parameters) {
-                std::cout << "Received Parameters" << std::endl << std::flush;
+                // std::cout << "Received Parameters" << std::endl << std::flush;
                 for (const auto& [index, value] : parameters)
                 {
                     this->ModelParams[index] = value;

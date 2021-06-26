@@ -207,7 +207,7 @@ namespace Iolive {
 
 				if (ImGui::Button("Disconnect from Server"))
 				{
-					app->LeaveRoom();
+					if (app->m_in_room) app->LeaveRoom();
 					app->m_client->Disconnect();
 				}
 			}

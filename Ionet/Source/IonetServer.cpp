@@ -12,22 +12,39 @@ namespace ionet {
         void MessageRoom(const olc::net::message<IonetMessageHeader>& msg, RoomId room_id,
             std::shared_ptr<olc::net::connection<IonetMessageHeader>> pIgnoreClient = nullptr)
         {
-            for (const auto& client : m_deqConnections) {
-                uint32_t client_id = client->GetID();
-                if (pIgnoreClient && pIgnoreClient->GetID() == client_id) {
-                    continue;
-                }
-                try
+            bool bInvalidClientExists = false;
+            for (auto& [client_id, client] : m_mapConnections)
+            {
+                if (client && client->IsConnected())
                 {
-                    if (room_id == m_room_manager.GetRoom(client_id))
+                    if (pIgnoreClient && pIgnoreClient->GetID() == client_id)
                     {
-                        MessageClient(client, msg);
+                        continue;
+                    }
+                    try
+                    {
+                        if (room_id == m_room_manager.GetRoom(client_id))
+                        {
+                            // MessageClient(client, msg);
+                            client->Send(msg);
+                        }
+                    }
+                    catch (std::exception e)
+                    {
+                        // Do nothing.
                     }
                 }
-                catch (std::exception e)
+                else
                 {
-                    // Do nothing.
+                    bInvalidClientExists = true;
+                    OnClientDisconnect(client);
+                    client.reset();
                 }
+
+            }
+            if (bInvalidClientExists)
+            {
+                RemoveDisconnectedClients();
             }
         }
 
@@ -58,6 +75,8 @@ namespace ionet {
 
         void OnMessage(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) override
         {
+            RemoveDisconnectedClients();
+            ResetId();
             switch (msg.header.id)
             {
             case IonetMessageHeader::PING:
@@ -80,6 +99,11 @@ namespace ionet {
             }
         }
     private:
+        void ResetId()
+        {
+            nIDCounter = 10000;
+        }
+
         void HandlePing(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
             // Ping back to server.
             MessageClient(client, msg);
@@ -114,8 +138,16 @@ namespace ionet {
         }
 
         void HandleLeaveRoom(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
-            std::cout << "[" << client->GetID() << "] Leaving room " << m_room_manager.GetRoom(client->GetID()) << std::endl;
-            m_room_manager.LeaveRoom(client->GetID());
+            try
+            {
+                RoomId room_id = m_room_manager.GetRoom(client->GetID());
+                std::cout << "[" << client->GetID() << "] Leaving room " << room_id << std::endl;
+                m_room_manager.LeaveRoom(client->GetID());
+            }
+            catch (std::exception e)
+            {
+                // Could not find room.
+            }
         }
 
         void HandleListRooms(std::shared_ptr<olc::net::connection<IonetMessageHeader>> client, olc::net::message<IonetMessageHeader>& msg) {
@@ -131,8 +163,8 @@ namespace ionet {
             // std::cout << "[" << client->GetID() << "] Forwarding model params" << std::endl;
             try
             {
-				RoomId room_id = m_room_manager.GetRoom(client->GetID());
-				MessageRoom(msg, room_id, client);
+                RoomId room_id = m_room_manager.GetRoom(client->GetID());
+                MessageRoom(msg, room_id, client);
             }
             catch (std::exception e)
             {
@@ -146,7 +178,7 @@ namespace ionet {
 
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     ionet::IonetServer server(60000);
     server.Start();
     while (true) {
