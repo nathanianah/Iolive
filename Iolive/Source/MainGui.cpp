@@ -196,6 +196,7 @@ namespace Iolive {
 					{
 						app->JoinRoom(CurrentRoom);
 					}
+
 				}
 				else
 				{
@@ -209,6 +210,7 @@ namespace Iolive {
 				{
 					if (app->m_in_room) app->LeaveRoom();
 					app->m_client->Disconnect();
+					app->ResetClientInfo();
 				}
 			}
 		}
@@ -250,6 +252,7 @@ namespace Iolive {
 						{
 							// delete previous model
 							app->m_UserModel.DeleteModel();
+							app->ModelParams.clear();
 							
 							// clear ParameterGUI
 							ParameterGUI.UnsetModel();

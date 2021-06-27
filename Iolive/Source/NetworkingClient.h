@@ -11,12 +11,14 @@ namespace Iolive
 		virtual void JoinRoom(ionet::RoomId room_id) = 0;
 		virtual void LeaveRoom() = 0;
 		virtual std::vector<ionet::RoomId> GetRooms() = 0;
+		virtual void ResetClientInfo() = 0;
 		// void SetRoomList(std::vector<ionet::RoomId> room_ids) { m_rooms = room_ids; }
 
 		std::vector<ionet::RoomId> m_rooms;
 
 		bool m_in_room = false;
 		ionet::RoomId m_current_room;
+		bool IsValidated = false;
 		std::map<int, float> ModelParams;
 	};
 }

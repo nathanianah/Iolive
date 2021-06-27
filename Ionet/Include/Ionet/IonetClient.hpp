@@ -33,6 +33,7 @@ namespace ionet {
         void SetJoinRoomRejectedHandler(std::function<void(RoomId room_id)> handler);
         void SetSendRoomsHandler(std::function<void(std::vector<RoomId> room_ids)> handler);
         void SetModelParamsHandler(std::function<void(std::map<int, float> parameters)> handler);
+        void SetLeaveRoomHandler(std::function<void()> handler);
 
     protected:
         void HandleAcceptClient(IonetMessage msg);
@@ -41,6 +42,7 @@ namespace ionet {
         void HandleJoinRoomRejected(IonetMessage msg);
         void HandleSendRooms(IonetMessage msg);
         void HandleModelParams(IonetMessage msg);
+        void HandleLeaveRoom(IonetMessage msg);
 
         std::function<void()> m_client_accept_handler;
         std::function<void(std::chrono::system_clock::duration ping)> m_ping_handler;
@@ -48,6 +50,7 @@ namespace ionet {
         std::function<void(RoomId room_id)> m_join_room_rejected_handler;
         std::function<void(std::vector<RoomId> room_ids)> m_send_rooms_handler;
         std::function<void(std::map<int, float> parameters)> m_model_params_handler;
+        std::function<void()> m_leave_room_handler;
 
         std::queue<IonetMessage> m_param_buffer;
     };

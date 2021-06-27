@@ -21,6 +21,8 @@ namespace ionet {
 
 		REQUEST_ROOMS,
 		SEND_ROOMS,
+
+		ASSIGN_NAME
 	};
 
 	typedef olc::net::message<IonetMessageHeader> IonetMessage;

@@ -447,12 +447,19 @@ namespace Iolive {
         switch (client_mode) {
         case ionet::ClientMode::SEND:
             m_client = std::make_unique<ionet::IonetSendClient>();
+			m_client->SetClientAcceptHandler(
+				[this]() {
+                    this->RequestRooms();
+                    this->IsValidated = true;
+				});
             break;
         case ionet::ClientMode::RECEIVE:
             m_client = std::make_unique<ionet::IonetReceiveClient>();
 			m_client->SetClientAcceptHandler(
 				[this]() {
-					this->BindDefaultParametersWithNetwork();
+                    this->RequestRooms();
+					this->BindAllParametersWithNetwork();
+                    this->IsValidated = true;
 				});
             break;
         default:
@@ -482,6 +489,11 @@ namespace Iolive {
                     this->ModelParams[index] = value;
                 }
             });
+        m_client->SetLeaveRoomHandler(
+            [this]() {
+                this->m_in_room = false;
+                this->m_current_room = 0;
+            } );
         m_client->Connect(address, port);
     }
 
@@ -811,6 +823,18 @@ namespace Iolive {
             model->SetParameterBindingAt(paramIndex.ParamBrowRAngle, paramGui.GetPtrValueByIndex(paramIndex.ParamBrowRAngle));
     }
 
+    void Application::BindAllParametersWithGui()
+    {
+        Model2D* model = m_UserModel.GetModel2D();
+        auto& parameterGui = MainGui::Get().ParameterGUI;
+
+        // set parameter binding between parameterGui and live2d model
+        for (size_t paramIndex = 0; paramIndex < model->GetParameterCount(); paramIndex++)
+        {
+            model->SetParameterBindingAt(paramIndex, parameterGui.GetPtrValueByIndex(paramIndex));
+        }
+    }
+
     void Application::BindDefaultParametersWithNetwork()
     {
         ExampleAppLog::AddLog("[Iolive][I] Binding model parameters with the Network\n\n");
@@ -866,9 +890,19 @@ namespace Iolive {
 
     }
 
+    void Application::BindAllParametersWithNetwork()
+    {
+        Model2D* model = m_UserModel.GetModel2D();
+        // set parameter binding between ModelParams and live2d model
+        for (size_t paramIndex = 0; paramIndex < model->GetParameterCount(); paramIndex++)
+        {
+            model->SetParameterBindingAt(paramIndex, &ModelParams[paramIndex]);
+        }
+    }
+
     bool Application::IsConnected()
     {
-        return (m_client && m_client->IsConnected());
+        return (m_client && m_client->IsConnected() && IsValidated);
     }
     void Application::RequestRooms()
     {
@@ -883,11 +917,21 @@ namespace Iolive {
     void Application::LeaveRoom()
     {
         m_client->LeaveRoom();
-        m_in_room = false;
     }
 
     std::vector<ionet::RoomId> Application::GetRooms()
     {
         return m_rooms;
     }
+
+	void Application::ResetClientInfo()
+	{
+		m_in_room = false;
+		m_current_room = 0;
+		IsValidated = false;
+
+        // Clear networking binding.
+		ModelParams.clear();
+        BindAllParametersWithGui();
+	}
 } // namespace Iolive

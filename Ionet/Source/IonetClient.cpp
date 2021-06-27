@@ -5,29 +5,15 @@
 namespace ionet {
     IonetClient::IonetClient()
     {
-        // TODO: Have server periodically check for stale connections.
-
-        // TODO: Implement a bool is_ready for sending...
-
-        // TODO: Implement one sender per room in the server.
         // TODO: Have the gui not access the client.
 
-        // TODO: Implement into Application/MainGui.
-        // TODO: Implement send/recieve parameters in Application.
-        // TODO: MainGui connected to room page... list others?
+        // TODO: Names for clients???
         // TODO: Get room info (people in room) - Create messages.
         // TODO: Make rooms strings and not ints.
 
-        // TODO: Names for clients???
-
         // TODO: Start/stop model transmission;
-        // TODO: Networking on its own thread on application?
-        // Might need to look into this to separate fps from network.
 
         // TODO: Send all parameters, not just defaults
-
-        // BUGS:
-		// TODO: Find out why header size != input.size()
     }
 
     void IonetClient::Update()
@@ -76,6 +62,9 @@ namespace ionet {
                     m_param_buffer.push(msg);
                 }
             }
+            break;
+            case ionet::IonetMessageHeader::LEAVE_ROOM:
+                HandleLeaveRoom(msg);
             }
         }
         if (!has_model_params && !m_param_buffer.empty())
@@ -157,6 +146,16 @@ namespace ionet {
         }
     }
 
+    void IonetClient::HandleLeaveRoom(IonetMessage msg)
+    {
+        ionet::IonetMessageLeaveRoom msg_factory;
+        msg_factory.Unload(msg);
+        if (m_leave_room_handler)
+        {
+            m_leave_room_handler();
+        }
+    }
+
     void IonetClient::Ping()
     {
         IonetMessagePing msg_factory;
@@ -217,6 +216,11 @@ namespace ionet {
     void IonetClient::SetModelParamsHandler(std::function<void(std::map<int, float> parameters)> handler)
     {
         m_model_params_handler = handler;
+    }
+
+    void IonetClient::SetLeaveRoomHandler(std::function<void()> handler)
+    {
+        m_leave_room_handler = handler;
     }
 
 }

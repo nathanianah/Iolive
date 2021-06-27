@@ -108,7 +108,9 @@ namespace Iolive {
 		void DoOptimizeParameters();
 		void BindDefaultParametersWithFace();
 		void BindDefaultParametersWithGui();
+		void BindAllParametersWithGui();
 		void BindDefaultParametersWithNetwork();
+		void BindAllParametersWithNetwork();
 
 		/*
 		* Window callback as static method
@@ -123,6 +125,7 @@ namespace Iolive {
 		void JoinRoom(ionet::RoomId room_id);
 		void LeaveRoom();
 		std::vector<ionet::RoomId> GetRooms();
+		void ResetClientInfo();
 
 
 	private:

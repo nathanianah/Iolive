@@ -20,6 +20,12 @@ namespace ionet
         if (it != m_user_room.end())
         {
             RoomId room_id = it->second;
+            // Remove sender from room.
+            if (m_room_senders.find(room_id) != m_room_senders.end()
+                && m_room_senders[room_id] == client_id)
+            {
+				m_room_senders.erase(room_id);
+            }
             auto room_it = m_rooms.find(room_id);
             if (room_it != m_rooms.end())
             {
@@ -62,5 +68,18 @@ namespace ionet
             throw std::invalid_argument("Room does not exist");
         }
         return it->second;
+    }
+
+    bool RoomManager::CheckOrSetRoomSender(RoomId room_id, uint32_t client_id)
+    {
+        if (m_room_senders.find(room_id) == m_room_senders.end())
+        {
+			m_room_senders[room_id] = client_id;
+            return true;
+        }
+        else
+        {
+            return m_room_senders[room_id] == client_id;
+        }
     }
 }

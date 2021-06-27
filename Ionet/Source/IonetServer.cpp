@@ -143,6 +143,7 @@ namespace ionet {
                 RoomId room_id = m_room_manager.GetRoom(client->GetID());
                 std::cout << "[" << client->GetID() << "] Leaving room " << room_id << std::endl;
                 m_room_manager.LeaveRoom(client->GetID());
+                MessageClient(client, msg);
             }
             catch (std::exception e)
             {
@@ -163,8 +164,19 @@ namespace ionet {
             // std::cout << "[" << client->GetID() << "] Forwarding model params" << std::endl;
             try
             {
+                // Only allow one sender per room and kick other senders.
                 RoomId room_id = m_room_manager.GetRoom(client->GetID());
-                MessageRoom(msg, room_id, client);
+                if (m_room_manager.CheckOrSetRoomSender(room_id, client->GetID()))
+                {
+					MessageRoom(msg, room_id, client);
+                }
+                else
+                {
+					m_room_manager.LeaveRoom(client->GetID());
+					std::cout << "[" << client->GetID() << "] Kicking from room " << room_id << std::endl;
+                    IonetMessageLeaveRoom response_factory;
+					MessageClient(client, response_factory.Populate());
+                }
             }
             catch (std::exception e)
             {
